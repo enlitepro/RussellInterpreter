@@ -24,7 +24,7 @@ class ParserTest
 
     public function testParserString()
     {
-        $this->object->resetListOfScalarText();
+        $this->object->reset();
 
         $code = <<<EOL
 concatenation('This is text', '!', '')
@@ -33,7 +33,7 @@ concatenation('This is text', '!', '')
 EOL;
 
         $code = $this->object->parseScalarText($code);
-        $this->assertAttributeCount(6, 'listOfScalarText', $this->object);
+        $this->assertAttributeCount(6, 'tokens', $this->object);
         $this->assertNotEmpty($code);
     }
 
@@ -59,25 +59,8 @@ functionD(
 EOL;
 
         $code = $this->object->removeUnnecessarySymbols($code);
-
-        /**
-         * @var array(
-         *      'functionA' => ''
-         *      'functionAA' => ''
-         *      'functionAB' => ''
-         *      'functionABA' => ''
-         *      'functionABB' => ''
-         *      'functionB' => ''
-         *      'functionC' => ''
-         *      'functionD' => ''
-         *      'functionDA' => ''
-         *      'functionDAA' => ''
-         *      'functionDAAA' => ''
-         * )
-         */
-        $listOfFunction = $this->object->parseFunctions($code);
-        var_dump($listOfFunction);
-        $this->assertCount(3, $listOfFunction);
+        $code = $this->object->parseFunctions($code);
+        $this->assertNotEmpty($code);
     }
 
     /**
