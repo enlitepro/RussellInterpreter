@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit bootstrap="./bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="true"
+         verbose="true"
+         syntaxCheck="true">
+
+    <testsuites>
+        <testsuite name="Main">
+            <directory>./RussellInterpreterTest</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
