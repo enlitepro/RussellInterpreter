@@ -7,7 +7,7 @@ namespace RussellInterpreter;
  * @package RussellInterpreter
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
  */
-abstract class Method
+abstract class Extension
 {
     abstract public function execute(array $arguments, Interpreter $core);
 }
