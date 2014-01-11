@@ -2,18 +2,15 @@
 
 namespace RussellInterpreter;
 
-class Parser
+include_once 'LexerInterface.php';
+
+/**
+ * @package RussellInterpreter
+ * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
+ */
+class Lexer
+    implements LexerInterface
 {
-    private $tree = array();
-
-    const TYPE_SCALAR = 'scalar';
-
-    const TYPE_VARIABLE = 'variable';
-
-    const TYPE_FUNCTION = 'function';
-
-    const TYPE_TEXT = 'text';
-
     const ARGUMENT_DELIMITER = ',';
 
     //Maximum function nesting level of '100'
@@ -22,9 +19,37 @@ class Parser
     protected $nesting = 0;
 
     /**
+     * @var ParserTreeInterface
+     */
+    protected $parserTree = null;
+
+    /**
      * @var array
      */
     protected $tokens = [];
+
+    function __construct($params = array())
+    {
+        if (isset($params['parser_tree'])) {
+            $this->setParserTree($params['parser_tree']);
+        }
+    }
+
+    /**
+     * @param \RussellInterpreter\ParserTreeInterface $parserTree
+     */
+    public function setParserTree(ParserTreeInterface $parserTree)
+    {
+        $this->parserTree = $parserTree;
+    }
+
+    /**
+     * @return \RussellInterpreter\ParserTreeInterface
+     */
+    public function getParserTree()
+    {
+        return $this->parserTree;
+    }
 
     public function reset()
     {
@@ -49,49 +74,27 @@ class Parser
     }
 
     /**
-     * Get text and get token
-     *
-     * @param string $text
-     * @return string
-     */
-    public function setScalarText($text)
-    {
-        $token = $this->getToken(md5($text), self::TYPE_TEXT);
-        $this->tokens[$token] = $text;
-        return $token;
-    }
-
-    /**
-     * Return text or default value by md5 key
-     *
-     * @param $token
-     * @param mixed $default
+     * @param $code
      * @return mixed
      */
-    public function getScalarText($token, $default = null)
+    public function setFunction($code)
     {
-        return isset($this->tokens[$token])
-             ? $this->tokens[$token] : $default;
-    }
-
-    /**
-     * @param string $function @var
-     *  "func(arg1, arg2, {#tocken#})"
-     * @return string
-     */
-    public function setFunction($function)
-    {
-        $token = $this->getToken(md5($function), self::TYPE_FUNCTION);
-        $this->tokens[$token] = $this->parseFunction($function);
+        $function = $this->parseFunction($code);
+        $token = $this->getParserTree()->setFunction(
+            $code,
+            $function['name'],
+            $function['arguments']
+        );
         return $token;
     }
 
     public function parseFunction($function)
     {
         if (preg_match_all('/([A-Za-z_][A-Za-z0-9_]*)(\(.*\))/', $function, $matches)) {
-            $name = $matches[1][0];
-            $args = $this->parseArguments($matches[2][0]);
-            return $this->structFunction($name, $args);
+            return array(
+                'name'      => $matches[1][0],
+                'arguments' => $this->parseArguments($matches[2][0])
+            );
         }
     }
 
@@ -135,7 +138,7 @@ class Parser
     public function parseScalarText($code)
     {
         $code = preg_replace_callback("/'([^']|\n)*'/s", function($text){
-            return $this->setScalarText($text[0]);
+            return $this->getParserTree()->setScalarText($text[0]);
         }, $code);
 
         return $code;
@@ -143,19 +146,17 @@ class Parser
 
     /**
      * @param string $code
-     * @return array
+     * @return ParserTree
      */
     public function code($code)
     {
         $code = $this->parseScalarText($code);
         $code = $this->removeUnnecessarySymbols($code);
         $code = $this->parseFunctions($code);
-        $firstLineOfToken = $this->splitTokens($code);
+        $firstLineOfTree = $this->splitTokens($code);
 
-        return array(
-            'program' => $firstLineOfToken,
-            'tokens' => $this->tokens,
-        );
+        $this->getParserTree()->setTree($firstLineOfTree);
+        return $this->getParserTree();
     }
 
     /**
@@ -187,7 +188,7 @@ class Parser
         $this->checkNesting();
         $this->incrementNesting();
 
-        if ($res = preg_match_all('/[A-Za-z_]+\([^(^)]*\)/', $code, $matches)) {
+        if (preg_match_all('/[A-Za-z_]+\([^(^)]*\)/', $code, $matches)) {
             foreach ($matches[0] as $function) {
                 $token = $this->setFunction($function);
                 $code = str_replace($function, $token, $code);
@@ -199,59 +200,5 @@ class Parser
         $this->resetNesting();
 
         return $code;
-    }
-
-    /**
-     * @param mixed $value
-     * @return array
-     */
-    protected function structScalar($value)
-    {
-        return array(
-            'type'  => self::TYPE_SCALAR,
-            'value' => $value,
-        );
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     * @return array
-     */
-    protected function structVariable($name, $value)
-    {
-        return array(
-            'type'  => self::TYPE_VARIABLE,
-            'name'  => $name,
-            'value' => $value,
-        );
-    }
-
-    /**
-     * @param string $name
-     * @param array $arguments
-     * @return array
-     */
-    protected function structFunction($name, $arguments = array())
-    {
-        return array(
-            'type'      => self::TYPE_FUNCTION,
-            'name'      => $name,
-            'arguments' => $arguments,
-        );
-    }
-
-    protected function getToken($key, $type)
-    {
-        switch ($type) {
-            case self::TYPE_FUNCTION:
-                return "{#{$key}#}";
-
-            case self::TYPE_TEXT:
-                return "{%{$key}%}";
-
-            default:
-                throw new Exception('Unknown type for token');
-        }
     }
 }

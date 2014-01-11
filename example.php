@@ -1,47 +1,55 @@
 <?php
 
-include_once 'RussellInterpreter.php';
+include_once 'RussellInterpreter/Interpreter.php';
+include_once 'RussellInterpreter/Lexer.php';
+include_once 'RussellInterpreter/ParserTree.php';
 
-$interpreter = new RussellInterpreter\Interpreter();
-
-$functions = array(
-    'var'   => 'Variable',
-    'sum'   => 'Summation',
-    'minus' => 'Subtraction',
-    'div'   => 'Division',
-    'mult'  => 'Multiplication',
-    'rand'  => 'Random',
-    'arr'  => 'Arr',
+$extensions = array(
+    'Assignment' => array('var', 'variable', 'assignment', 'assign'),
+    'Summation' => array('sum', 'summation'),
+    'Subtraction' => array('minus', 'subtraction'),
+    'Division' => array('div', 'division'),
+    'Multiplication' => array('multi', 'multiplication'),
+    'Random' => array('rand', 'random'),
+    'Arr' => array('arr', 'array'),
 );
 
-foreach ($functions as $name => $file) {
-    include_once "Method/{$file}.php";
-    $class = "RussellInterpreter\\Method\\{$file}";
-    $variable = new $class();
-    $interpreter->addFunction($name, $variable);
-}
 
 $code = <<<EOD
-var(result, rand(0, 10))
-var(x, rand(0, result))
-var(summation, sum(2, 5))
-var(subtraction, minus(10, 100))
-var(division, div(10, 100))
-var(multiplication, mult(2, 2, 2))
-var(array, arr(summation, subtraction, division, multiplication))
+variable(result, test(0, 10))
+variable(x, test(0, result))
+test(summation, test(test(test(2, 3),test(4, 5)),5))
+subtraction(subtraction, test(10, 100))
+division(division, test(10, 100))
+multiplication(multiplication, test(2, 2, 2))
+array(array, test(summation, subtraction, division, multiplication))
 EOD;
 
-// @todo Problem with method variable when variable is exist
-//$interpreter->setVariable('x', 1);
-//$interpreter->setVariable('y', 2);
-$interpreter->setVariable('z', 100500);
+$lexer = new RussellInterpreter\Lexer(array(
+    'parser_tree' => new RussellInterpreter\ParserTree(),
+));
+$parserTree = $lexer->code($code);
+var_dump($parserTree); die();
 
-try {
-    $variables = $interpreter->code($code);
-    $variables = $interpreter->code('var(z2, sum(z, 40, 3))');
-}
-catch (Exception $e) {
-    echo $e;
+$interpreter = new RussellInterpreter\Interpreter(array(
+    'extensions' => $extensions,
+));
+$interpreter->setVariable('x', 100);
+
+foreach ($extensions as $file => $synonyms) {
+    include_once "Extension/{$file}.php";
+    $class = "RussellInterpreter\\Extension\\{$file}";
+    $extension = new $class();
+    $interpreter->addExtension($synonyms, $extension);
 }
 
-var_dump($variables);
+$isComplete = $interpreter->execute($parserTree);
+
+if ($isComplete) {
+    $variables = $interpreter->getVariables();
+    var_dump($variables);
+}
+else {
+    $errors = $interpreter->getErrors();
+    var_dump($errors);
+}
