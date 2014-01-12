@@ -4,8 +4,24 @@ include_once 'RussellInterpreter/Interpreter.php';
 include_once 'RussellInterpreter/Lexer.php';
 include_once 'RussellInterpreter/ParserTree.php';
 
+$code = <<<EOD
+variable(result, rand(0, 10))
+variable(x, rand(0, result))
+assign(summation, sum(sum(sum(2, 3),sum(4, 5)),5))
+assign(subtraction, subtraction(10, 100))
+assign(division, division(10, 100))
+assign(multiplication, multiplication(2, 2, 2))
+assign(array, array(summation, subtraction, division, multiplication))
+EOD;
+
+$lexer = new RussellInterpreter\Lexer(array(
+    'parser_tree' => new RussellInterpreter\ParserTree(),
+));
+$parserTree = $lexer->code($code);
+
 $extensions = array(
     'Assignment' => array('var', 'variable', 'assignment', 'assign'),
+    'Test' => array('test'),
     'Summation' => array('sum', 'summation'),
     'Subtraction' => array('minus', 'subtraction'),
     'Division' => array('div', 'division'),
@@ -14,36 +30,25 @@ $extensions = array(
     'Arr' => array('arr', 'array'),
 );
 
-
-$code = <<<EOD
-variable(result, test(0, 10))
-variable(x, test(0, result))
-test(summation, test(test(test(2, 3),test(4, 5)),5))
-subtraction(subtraction, test(10, 100))
-division(division, test(10, 100))
-multiplication(multiplication, test(2, 2, 2))
-array(array, test(summation, subtraction, division, multiplication))
-EOD;
-
-$lexer = new RussellInterpreter\Lexer(array(
-    'parser_tree' => new RussellInterpreter\ParserTree(),
-));
-$parserTree = $lexer->code($code);
-var_dump($parserTree); die();
-
-$interpreter = new RussellInterpreter\Interpreter(array(
-    'extensions' => $extensions,
-));
-$interpreter->setVariable('x', 100);
-
 foreach ($extensions as $file => $synonyms) {
     include_once "Extension/{$file}.php";
     $class = "RussellInterpreter\\Extension\\{$file}";
     $extension = new $class();
-    $interpreter->addExtension($synonyms, $extension);
+//    $interpreter->addExtension($synonyms, $extension);
+    $extensions[$file] = array(
+        'object' => $extension,
+        'synonyms' => $synonyms,
+    );
 }
 
+$interpreter = new RussellInterpreter\Interpreter(array(
+    'extensions' => $extensions,
+));
+
+//$interpreter->setVariable('x', 100);
+
 $isComplete = $interpreter->execute($parserTree);
+//var_dump($interpreter->getVariables()); die(); //4:55
 
 if ($isComplete) {
     $variables = $interpreter->getVariables();
