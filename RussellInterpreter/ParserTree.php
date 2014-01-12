@@ -79,12 +79,25 @@ class ParserTree
         );
     }
 
+    public function variable($value)
+    {
+        if ($this->isToken($value)) {
+            return $value;
+        }
+        elseif (is_numeric($value)) {
+            return $value;
+        }
+        else {
+            return $this->structVariable($value);
+        }
+    }
+
     /**
      * @param string $name
      * @param mixed $value
      * @return array
      */
-    protected function structVariable($name, $value)
+    protected function structVariable($name, $value = null)
     {
         return array(
             'type'  => self::TYPE_VARIABLE,
@@ -129,11 +142,21 @@ class ParserTree
         }
     }
 
+    public function isToken($token)
+    {
+        return isset($this->entities[$token]);
+    }
+
     /**
      * @param array $tree
      */
     public function setTree(array $tree)
     {
         $this->tree = $tree;
+    }
+
+    public function getTree()
+    {
+        return $this->tree;
     }
 }

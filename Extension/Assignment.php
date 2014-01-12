@@ -14,15 +14,23 @@ use RussellInterpreter;
 class Assignment
     extends RussellInterpreter\Extension
 {
+    /**
+     * @param array $arguments
+     * @param RussellInterpreter\Interpreter $core
+     * @return mixed
+     */
+    public function calculationArguments(array $arguments, RussellInterpreter\Interpreter $core)
+    {
+        return array(
+            $arguments[0]['name'],
+            $core->calculation($arguments[1])
+        );
+    }
+
     public function execute(array $arguments, RussellInterpreter\Interpreter $core)
     {
-        $name = trim($arguments[0], '\'"');
+//        $name = trim($arguments[0], '\'"');
 
-        if ($core->isVariable($name, false)) {
-            $core->setVariable($name, $arguments[1]);
-        }
-        else {
-            throw new RussellInterpreter\Exception("Variable name '{$arguments[0]}' is not valid");
-        }
+        $core->setVariable($arguments[0], $arguments[1]);
     }
 }

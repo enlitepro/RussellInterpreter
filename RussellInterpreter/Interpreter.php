@@ -3,6 +3,7 @@
 namespace RussellInterpreter;
 
 include_once 'Exception.php';
+include_once 'InterpreterInterface.php';
 
 /**
  * Russell Interpreter
@@ -11,6 +12,7 @@ include_once 'Exception.php';
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
  */
 class Interpreter
+    implements InterpreterInterface
 {
     /**
      * @var Extension[]
@@ -25,7 +27,43 @@ class Interpreter
     /**
      * @var array
      */
-    protected $tokens = [];
+    protected $errors = [];
+
+    /**
+     * @var ParserTree
+     */
+    protected $parserTree = null;
+
+    /**
+     * @param array $params
+     */
+    function __construct(array $params = array())
+    {
+        if (isset($params['extensions'])) {
+            foreach ($params['extensions'] as $extension) {
+                $this->addExtension(
+                    $extension['synonyms'],
+                    $extension['object']
+                );
+            }
+        }
+    }
+
+    /**
+     * @param \RussellInterpreter\ParserTreeInterface $parserTree
+     */
+    public function setParserTree(ParserTreeInterface $parserTree)
+    {
+        $this->parserTree = $parserTree;
+    }
+
+    /**
+     * @return \RussellInterpreter\ParserTreeInterface
+     */
+    public function getParserTree()
+    {
+        return $this->parserTree;
+    }
 
     /**
      * @param array|string $synonyms
@@ -45,7 +83,7 @@ class Interpreter
     public function getExtension($name)
     {
         if (! isset($this->extensions[$name])) {
-            throw new Exception("Function '{$name}' not found");
+            throw new \Exception("Function '{$name}' not found");
         }
 
         return $this->extensions[$name];
@@ -67,27 +105,97 @@ class Interpreter
      */
     public function getVariable($name, $default = null)
     {
-        return isset($this->variables[$name])
-             ? $this->variables[$name] : $default;
+        if (isset($this->variables[$name])) {
+            $default = $this->variables[$name];
+        }
+        return $default;
     }
 
     /**
-     * @param $array
+     * @return array
      */
-    public function execute($array)
+    public function getVariables()
     {
-        $this->tokens = $array['tokens'];
-        foreach ($array['program'] as $operation) {
-            $this->compil($operation);
+        return $this->variables;
+    }
+
+    /**
+     * @param ParserTreeInterface $parserTree
+     * @return bool|void
+     */
+    public function execute(ParserTreeInterface $parserTree)
+    {
+        $this->setParserTree($parserTree);
+        $tree = $this->getParserTree()->getTree();
+
+        $isComplete = true;
+
+        try {
+            foreach ($tree as $entity) {
+                $this->calculation($entity);
+            }
+        }
+        catch(Exception $e) {
+            $this->errors[] = $e->getMessage();
+            $isComplete = false;
+        }
+
+        return $isComplete;
+    }
+
+    public function calculation($entity)
+    {
+        if (is_string($entity) && $this->getParserTree()->isToken($entity)) {
+            $entity = $this->getParserTree()->getEntityByToken($entity);
+        }
+
+        if (is_array($entity)) {
+            switch ($entity['type']) {
+                case ParserTree::TYPE_FUNCTION:
+                    return $this->calculationFunction($entity);
+
+                case ParserTree::TYPE_VARIABLE:
+                    return $this->getVariable($entity['name']);
+            }
+        }
+        else {
+            return $entity;
         }
     }
 
-    public function compil($operation)
+    /**
+     * @param array
+     * @return mixed
+     */
+    public function calculationFunction($function)
     {
-        $operation = $this->tokens[$operation];
-        switch ($operation) {
-            case Parser::TYPE_FUNCTION:
-                $this->excuteFunction($operation);
+        $extensionName = strtolower($function['name']);
+        $extension = $this->getExtension($extensionName);
+        $arguments = $extension->calculationArguments($function['arguments'], $this);
+//        if (! $arguments) {
+//            $arguments = $this->calculationArguments($function['arguments']);
+//        }
+        return $extension->execute($arguments, $this);
+    }
+
+    /**
+     * @param array $arguments
+     * @return array
+     */
+    public function calculationArguments($arguments)
+    {
+        $result = [];
+        foreach ($arguments as $key => $argument) {
+            $result[$key] = $this->calculation($argument);
         }
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }

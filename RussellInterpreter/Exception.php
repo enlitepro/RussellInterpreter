@@ -4,7 +4,7 @@ namespace RussellInterpreter;
 
 /**
  * Class Exception
- * @package RussellInterpreter\Interpreter
+ * @package RussellInterpreter
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
  */
 class Exception extends \Exception

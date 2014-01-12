@@ -112,8 +112,8 @@ class Lexer
         }
 
         $arguments = explode(self::ARGUMENT_DELIMITER, $arguments);
-        $arguments = array_map(function($var){
-            return trim($var);
+        $arguments = array_map(function($argument){
+            return $this->getParserTree()->variable(trim($argument));
         }, $arguments);
 
         return $arguments;

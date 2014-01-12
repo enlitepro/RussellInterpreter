@@ -1,18 +1,18 @@
 <?php
 
-namespace RussellInterpreter\Method;
+namespace RussellInterpreter\Extension;
 
 use RussellInterpreter;
 
-include_once 'Interpreter/Method.php';
+include_once 'RussellInterpreter/Extension.php';
 
 /**
  * Class Random
- * @package RussellInterpreter\Method
+ * @package RussellInterpreter\Extension
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
  */
 class Random
-    extends RussellInterpreter\Method
+    extends RussellInterpreter\Extension
 {
     public function execute(array $arguments, RussellInterpreter\Interpreter $core)
     {

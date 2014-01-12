@@ -1,18 +1,18 @@
 <?php
 
-namespace RussellInterpreter\Method;
+namespace RussellInterpreter\Extension;
 
 use RussellInterpreter;
 
-include_once 'Interpreter/Method.php';
+include_once 'RussellInterpreter/Extension.php';
 
 /**
  * Class Multiplication
- * @package RussellInterpreter\Method
+ * @package RussellInterpreter\Extension
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
  */
 class Multiplication
-    extends RussellInterpreter\Method
+    extends RussellInterpreter\Extension
 {
     public function execute(array $arguments, RussellInterpreter\Interpreter $core)
     {
