@@ -120,6 +120,15 @@ class Interpreter
     }
 
     /**
+     * Clear errors and variables
+     */
+    public function clear()
+    {
+        $this->variables = [];
+        $this->errors = [];
+    }
+
+    /**
      * @param ParserTreeInterface $parserTree
      * @return bool|void
      */
