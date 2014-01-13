@@ -1,0 +1,24 @@
+{
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "name": "enlitepro/enlite-russellInterpreter",
+    "keywords": [
+        "parser",
+        "math",
+        "interpreter"
+    ],
+    "authors": [
+        {
+            "name": "Dzyanis Kuzmenka",
+            "email": "dzyanis@gmail.com"
+        }
+    ],
+    "require": {
+        "php":                                  ">=5.4"
+    },
+    "autoload": {
+        "psr-0": {
+            "RussellInterpreter": "RussellInterpreter"
+        }
+    }
+}

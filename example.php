@@ -21,7 +21,7 @@ $parserTree = $lexer->code($code);
 
 $extensions = array(
     'Assignment' => array('var', 'variable', 'assignment', 'assign'),
-    'Test' => array('test'),
+//    'Test' => array('test'),
     'Summation' => array('sum', 'summation'),
     'Subtraction' => array('minus', 'subtraction'),
     'Division' => array('div', 'division'),
@@ -31,7 +31,7 @@ $extensions = array(
 );
 
 foreach ($extensions as $file => $synonyms) {
-    include_once "Extension/{$file}.php";
+    include_once "RussellInterpreter/Extension/{$file}.php";
     $class = "RussellInterpreter\\Extension\\{$file}";
     $extension = new $class();
 //    $interpreter->addExtension($synonyms, $extension);

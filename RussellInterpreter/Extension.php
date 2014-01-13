@@ -2,12 +2,14 @@
 
 namespace RussellInterpreter;
 
+include_once 'ExtensionInterface.php';
+
 /**
  * Class Method
  * @package RussellInterpreter
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
  */
-abstract class Extension
+abstract class Extension implements ExtensionInterface
 {
     /**
      * @param array $arguments
