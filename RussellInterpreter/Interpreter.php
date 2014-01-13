@@ -120,6 +120,14 @@ class Interpreter
     }
 
     /**
+     * @param array $variables
+     */
+    public function setVariables($variables)
+    {
+        $this->variables = $variables;
+    }
+
+    /**
      * Clear errors and variables
      */
     public function clear()
