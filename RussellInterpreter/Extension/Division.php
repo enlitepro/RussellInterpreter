@@ -4,7 +4,7 @@ namespace RussellInterpreter\Extension;
 
 use RussellInterpreter;
 
-include_once 'RussellInterpreter/Extension.php';
+include_once __DIR__ . '/../Extension.php';
 
 /**
  * Class Division
