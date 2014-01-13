@@ -1,7 +1,7 @@
 {
     "license": "MIT",
     "minimum-stability": "stable",
-    "name": "enlitepro/enlite-russell-interpreter",
+    "name": "enlitepro/russell-interpreter",
     "keywords": [
         "parser",
         "math",
