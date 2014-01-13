@@ -2,7 +2,7 @@
 
 namespace RussellInterpreter\Extension;
 
-include_once 'RussellInterpreter/Extension.php';
+include_once './../Extension.php';
 
 use RussellInterpreter;
 
