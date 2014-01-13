@@ -75,7 +75,9 @@ class Interpreter
             $synonyms = array($synonyms);
         }
 
-        foreach ($synonyms as $synonym) {
+        foreach ($synonyms as $synonym)
+        {
+            $extension->init($this);
             $this->extensions[$synonym] = $extension;
         }
     }

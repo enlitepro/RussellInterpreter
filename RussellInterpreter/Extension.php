@@ -12,6 +12,14 @@ include_once 'ExtensionInterface.php';
 abstract class Extension implements ExtensionInterface
 {
     /**
+     * @param Interpreter $core
+     */
+    public function init(Interpreter $core)
+    {
+        // pass
+    }
+
+    /**
      * @param array $arguments
      * @param Interpreter $core
      * @return mixed
