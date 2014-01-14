@@ -63,6 +63,15 @@ $extensions = array(
     'Disjunction' => array('disjunction', 'or'),
     'Negation' => array('negation', 'not'),
     'Plural' => array('plural'),
+    'Concatenation' => array('concatenation', 'concat'),
+    'Greater' => array('greater', 'gt'),
+    'Greaterorequal' => array('greater_or_equal', 'gteq'),
+    'Less' => array('less', 'ls'),
+    'Lessorequal' => array('less_or_queal', 'lseq'),
+    'Modulo' => array('modulo', 'mod'),
+    'RandomArgument' => array('random_argument', 'rand_arg'),
+    'SquareRoot' => array('square_root', 'sqrt'),
+    'Exponential' => array('exponential', 'pow'),
 );
 
 foreach ($extensions as $file => $synonyms) {
