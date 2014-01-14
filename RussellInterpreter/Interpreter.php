@@ -85,7 +85,7 @@ class Interpreter
     public function getExtension($name)
     {
         if (! isset($this->extensions[$name])) {
-            throw new \Exception("Function '{$name}' not found");
+            throw new Exception("Function '{$name}' not found");
         }
 
         return $this->extensions[$name];
