@@ -32,6 +32,9 @@ until(equal(i, 1),
 )
 var(rt, if(true, 'yes', 'no'))
 var(rf, if(false, 'yes', 'no'))
+var(he, plural(1, 'парень', 'парня', 'парней'))
+var(she, plural(2, 'девука', 'девуки', 'девушек'))
+var(it, plural(5, 'солнце', 'солнца', 'солнц'))
 EOD;
 
 $lexer = new RussellInterpreter\Lexer(array(
@@ -59,6 +62,7 @@ $extensions = array(
     'Conjunction' => array('disjunction', 'and'),
     'Disjunction' => array('disjunction', 'or'),
     'Negation' => array('negation', 'not'),
+    'Plural' => array('plural'),
 );
 
 foreach ($extensions as $file => $synonyms) {
