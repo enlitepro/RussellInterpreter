@@ -175,6 +175,9 @@ class Interpreter
 
                 case ParserTree::TYPE_VARIABLE:
                     return $this->getVariable($entity['name']);
+
+                case ParserTree::TYPE_SCALAR:
+                    return $entity['value'];
             }
         }
         else {
