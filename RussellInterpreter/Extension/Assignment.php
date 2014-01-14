@@ -2,9 +2,9 @@
 
 namespace RussellInterpreter\Extension;
 
-include_once __DIR__ . '/../Extension.php';
-
 use RussellInterpreter;
+
+include_once __DIR__ . '/../Extension.php';
 
 /**
  * Class Variable

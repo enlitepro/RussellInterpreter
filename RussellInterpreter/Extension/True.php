@@ -3,7 +3,8 @@
 namespace RussellInterpreter\Extension;
 
 use RussellInterpreter;
-use RussellInterpreter\Interpreter;
+
+include_once __DIR__ . '/../Extension.php';
 
 /**
  * @package RussellInterpreter\Extension
@@ -12,7 +13,7 @@ use RussellInterpreter\Interpreter;
 class True
     extends RussellInterpreter\Extension
 {
-    public function init(Interpreter $core)
+    public function init(RussellInterpreter\Interpreter $core)
     {
         $core->setVariable('true', true);
     }

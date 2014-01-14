@@ -4,6 +4,8 @@ namespace RussellInterpreter\Extension;
 
 use RussellInterpreter;
 
+include_once __DIR__ . '/../Extension.php';
+
 /**
  * @package RussellInterpreter\Extension
  * @author Dzyanis Kuzmenka <dzyanis@gmail.com>
