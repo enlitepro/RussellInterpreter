@@ -54,8 +54,11 @@ $extensions = array(
     'Increment' => array('increment'),
     'Decrement' => array('decrement'),
     'Equal' => array('equal'),
-    'NotEqual' => array('notequal', 'not_equal', 'neq'),
+    'NotEqual' => array('notequal', 'not_equal'),
     'ConditionalOperator' => array('if'),
+    'Conjunction' => array('disjunction', 'and'),
+    'Disjunction' => array('disjunction', 'or'),
+    'Negation' => array('negation', 'not'),
 );
 
 foreach ($extensions as $file => $synonyms) {
