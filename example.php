@@ -35,6 +35,18 @@ var(rf, if(false, 'yes', 'no'))
 var(he, plural(1, 'парень', 'парня', 'парней'))
 var(she, plural(2, 'девука', 'девуки', 'девушек'))
 var(it, plural(5, 'солнце', 'солнца', 'солнц'))
+
+until(
+      and(greater(a, b), less(d, 100)),
+      assign(a, random(2,11)),
+      assign(b, random(2,11)),
+      assign(d, multiplication(a,b)),
+      assign(e, multiplication(sum(a,b), 2))
+)
+
+assign(z, sum(a, 2))
+assign(m, sum(a, 4))
+assign(n, sum(a, 1))
 EOD;
 
 $lexer = new RussellInterpreter\Lexer(array(
