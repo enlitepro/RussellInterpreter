@@ -104,13 +104,7 @@ class Lexer
      */
     public function parseArguments($arguments)
     {
-        //delete parentheses
-        $lastIndex = strlen($arguments) - 1;
-        if ($arguments[0] === '(' && $arguments[$lastIndex] === ')') {
-            $arguments = substr($arguments, 1);
-            $arguments = substr($arguments, 0, $lastIndex - 1);
-        }
-
+        $arguments = $this->removeParentheses($arguments);
         $arguments = explode(self::ARGUMENT_DELIMITER, $arguments);
         $arguments = array_map(function($argument){
             return $this->getParserTree()->variable(trim($argument));
@@ -137,11 +131,42 @@ class Lexer
      */
     public function parseScalarText($code)
     {
-        $code = preg_replace_callback("/'([^']|\n)*'/s", function($text){
-            return $this->getParserTree()->setScalarText($text[0]);
+        $code = preg_replace_callback("/'([^']|\n)*'/s", function($original){
+            $text = $this->removeQuotationMarks($original[0]);
+            return $this->getParserTree()->setScalarText($text, $original[0]);
         }, $code);
 
         return $code;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    protected function removeQuotationMarks($text)
+    {
+        $lastIndex = strlen($text) - 1;
+        if ($text[0] === "'" && $text[$lastIndex] === "'") {
+            $text = substr($text, 1);
+            $text = substr($text, 0, $lastIndex - 1);
+        }
+
+        return $text;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    protected function removeParentheses($text)
+    {
+        $lastIndex = strlen($text) - 1;
+        if ($text[0] === "(" && $text[$lastIndex] === ")") {
+            $text = substr($text, 1);
+            $text = substr($text, 0, $lastIndex - 1);
+        }
+
+        return $text;
     }
 
     /**

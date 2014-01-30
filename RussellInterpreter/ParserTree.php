@@ -48,11 +48,13 @@ class ParserTree
      * Get text and get token
      *
      * @param string $text
+     * @param string $original
      * @return string
      */
-    public function setScalarText($text)
+    public function setScalarText($text, $original = null)
     {
-        $token = $this->getToken($text, self::TYPE_TEXT);
+        $original = $original ?: $text;
+        $token = $this->getToken($original, self::TYPE_TEXT);
         $this->setEntityByToken($token, $this->structScalar($text));
         return $token;
     }
