@@ -16,6 +16,6 @@ class Modulo
 {
     public function execute(array $arguments, RussellInterpreter\Interpreter $core)
     {
-        return false;
+        return $arguments[0] % $arguments[1];
     }
 }
